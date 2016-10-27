@@ -5,22 +5,21 @@ It is initially designed for a small size businesses and the idea is to help the
 # Features
 On a high level, this solution will provide modules including
 
-1. Accounts Receivable
-2. Accounts Payable
-3. Inventory Control
-4. Financial/Accounting
-
-#FRONT-END
-The screenshot below will be the future front-end. It is heavily under-development and you could be part of it. The project is "AccountGoWeb" and consuming the "Api" project.
+1. Login System
+2. Journal
+3. Ledger
+4. Trial Balance
+5. Balance Sheet
 
 Technology Stack:
-- ASP.NET Core
-- ReactJS
-- MobX, React-MobX
-- Axios
+- PHP
+- MySQL
+- JQuery
+- JQuery-UI
 - Bootstrap
-- D3
-- React-router (on some pages)
+- CSS3
+- HTML5
+- Some adds on
          
 
 # Help Wanted
@@ -31,4 +30,4 @@ If you are a developer and wanted to take part as contributor/collaborator we ar
 So go ahead, add your code. Looking forward to your first pull request.
 
 # Contact Support
-Feel free to email mvpsolution@gmail.com of any questions.
+Feel free to email JeraldPenus@gmail.com of any questions.
