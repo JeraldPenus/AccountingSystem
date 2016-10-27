@@ -1,0 +1,67 @@
+<!--Penus, Jerald B.--!>
+mysql_select_db("");
+mysql_select_db("");
+
+
+
+
+
+SELECT name, sum(debitBalance) as debit, sum(creditBalance) as credit, sum(debitBalance)-sum(creditBalance) as balance from 
+(
+	SELECT name, sum( a ) as debitBalance , sum( b ) as creditBalance, sum( a ) - sum( b ) as balance 
+	FROM 
+	(
+	 SELECT debit AS name, sum( daybookamount ) AS a, 0 AS b, 0 AS c FROM daybook 
+	 WHERE (dayBookDate between '2008-12-01' and '2008-12-31') GROUP BY debit 
+	 UNION 
+	 SELECT credit AS name, 0 AS a, sum( daybookamount ) AS b, 0 AS c FROM daybook 
+	 WHERE (dayBookDate between '2008-12-01' and '2008-12-31') GROUP BY credit 
+	) 
+	AS TT1 GROUP BY TT1.name
+
+	union
+
+	SELECT name, a as debitBalance, b as creditBalance, sum(a)- sum(b) as balance from 
+	(
+	SELECT acc_name as name, opening_balance as a, 0 as b, 0 as c from account_name where opening_balance_type='debit' 
+	union 
+	SELECT acc_name as name, 0 as a, opening_balance as b, 0 as c from account_name where opening_balance_type='credit'
+	) as TT2 group by TT2.name
+
+) as TT3 group by TT3.name
+
+Trading Query 
+=============
+select an.act_group_head as actgrouphead,sum(db.daybookamount) as debit, 0 as credit from daybook as db inner join account_name as an on db.debit=an.acc_name where an.acc_head='tr' group by an.act_group_head
+union
+select an.act_group_head as actgrouphead,0 as debit, sum(db.daybookamount) as credit from daybook as db inner join account_name as an on db.credit=an.acc_name where an.acc_head='tr' group by an.act_group_head
+
+Profit & Loss Query 
+===================
+select an.act_group_head,sum(db.daybookamount) as a, 0 as b from daybook as db inner join account_name as an on db.debit=an.acc_name where an.acc_head='pl' group by an.act_group_head
+union
+select an.act_group_head,0 as a, sum(db.daybookamount) as b from daybook as db inner join account_name as an on db.credit=an.acc_name where an.acc_head='pl' group by an.act_group_head
+
+Balance Sheet Query
+===================
+select actgrouphead, sum(debit) as debit, sum(credit) as credit, sum(debit-credit) as balance from
+(
+select actgrouphead, sum(a) as debit, sum(b) as credit , sum(a-b) as balance from 
+(
+select an.act_group_head as actgrouphead,sum(db.daybookamount) as a, 0 as b, 0 as c from daybook as db inner join account_name as an on db.debit=an.acc_name where an.acc_head='bs' group by an.act_group_head
+union
+select an.act_group_head as actgrouphead,0 as a, sum(db.daybookamount) as b, 0 as c from daybook as db inner join account_name as an on db.credit=an.acc_name where an.acc_head='bs' group by an.act_group_head
+) 
+as TT1 group by TT1.actgrouphead
+
+union
+
+select actgrouphead, sum(debit) as debit, sum(credit) as credit, sum(debit-credit) as balance from 
+(
+select act_group_head as actgrouphead, sum(opening_balance) as debit, 0 as credit, 0 as balance from account_name where opening_balance_type='debit' group by act_group_head
+union
+select act_group_head as actgrouphead, 0 as debit, sum(opening_balance) as credit, 0 as balance from account_name where opening_balance_type='credit' group by act_group_head
+)
+as TT2 group by TT2.actgrouphead
+)
+as TT3 group by TT3.actgrouphead order by ABS(TT3.balance)
